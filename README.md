@@ -22,7 +22,7 @@ dependencies {
 
 创建图片选择器：
 
-
+//
 Ctp.build(MainActivity.this)//创建实例
      .numColumns(2)//设置显示列数
      .maxPictureNumber(10)//设置最大选取图片数
@@ -30,7 +30,7 @@ Ctp.build(MainActivity.this)//创建实例
               
               
 接收：
-
+//
 @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
