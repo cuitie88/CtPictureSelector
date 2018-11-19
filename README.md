@@ -21,10 +21,12 @@ dependencies {
 使用：
 
 创建图片选择器：
+
+
 Ctp.build(MainActivity.this)//创建实例
-                .numColumns(2)//设置显示列数
-                .maxPictureNumber(10)//设置最大选取图片数
-                .startForResult(REQUEST_CODE);//设置Activity返回值requestCode
+     .numColumns(2)//设置显示列数
+     .maxPictureNumber(10)//设置最大选取图片数
+     .startForResult(REQUEST_CODE);//设置Activity返回值requestCode
               
               
 接收：
