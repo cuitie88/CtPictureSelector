@@ -1,0 +1,17 @@
+<resources>
+    <style name="Theme.AppCompat.Light.DarkActionBar.NoActionBar">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+    <!-- 主程序的Application样式. -->
+    <style name="AppThemeNoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="colorPrimaryDark">#ff393a3f</item>
+    </style>
+    <style name="ct_popWindow_animation">
+        <item name="android:windowEnterAnimation">@anim/ct_popupwindow_enter</item>
+        <item name="android:windowExitAnimation">@anim/ct_popupwindow_exit</item>
+    </style>
+</resources>
