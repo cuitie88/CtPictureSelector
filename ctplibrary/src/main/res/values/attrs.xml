@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CtHorizontalScrollPictureLayout">
+        <attr name="image_width" format="dimension" />
+        <attr name="image_height" format="dimension" />
+        <attr name="add_button_src" format="reference" />
+    </declare-styleable>
+</resources>
