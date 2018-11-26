@@ -6,6 +6,30 @@
     android:layout_height="match_parent"
     tools:context=".library.gv.CtShowImageActivity"
     android:orientation="vertical">
+    <!-- top -->
+    <RelativeLayout
+        android:id="@+id/ct_p_s_top_root"
+        android:layout_alignParentTop="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ff393a3f">
+        <LinearLayout
+            android:id="@+id/ct_ctsi_top_left_back_btn_ll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ct_btn_title_bg_selector"
+            android:clickable="true"
+            android:paddingLeft="10dp"
+            android:paddingTop="15dp"
+            android:paddingRight="50dp"
+            android:paddingBottom="15dp">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/pp_public_icon_left_back" />
+        </LinearLayout>
+
+    </RelativeLayout>
     <com.ctp.android.library.ps.view.ZoomImageView
         android:id="@+id/ct_ctsi_iv"
         android:layout_width="match_parent"

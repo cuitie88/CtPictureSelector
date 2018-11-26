@@ -59,6 +59,7 @@ public class CtHorizontalScrollPictureLayout extends RelativeLayout
     private LinkedHashMap<String, CtImageWithCancel> map;
     private OnClickAddImageListener onClickAddImageListener;
     private String uploadUrl;
+    private UploadDataParser uploadDataParser;
     public CtHorizontalScrollPictureLayout(Context context, AttributeSet attrs)
     {
         super(context, attrs);
@@ -116,6 +117,34 @@ public class CtHorizontalScrollPictureLayout extends RelativeLayout
             ll_imagesRoot.addView(map.get(path));
         }
     }
+    public void addImages(Context context, ArrayList<String> paths,String echoServer)
+    {
+        if(paths == null || paths.size() <= 0)return;
+        for(final String path : paths)
+        {
+            if(map.get(path) != null)return;
+            CtImageWithCancel ctImageWithCancel = new CtImageWithCancel(context)
+                    .setImage(context, echoServer+path)
+                    .setOnClickPictureListener(new CtImageWithCancel.OnClickPictureListener()
+                    {
+                        @Override
+                        public void onDeletePicture(String url, View view)
+                        {
+                            Log.d("CCTV","onDeletePicture !");
+                            ll_imagesRoot.removeView(map.get(path));
+                            map.remove(path);
+                        }
+                        @Override
+                        public void onReUpload()
+                        {
+                            MyTask mTask = new MyTask(path);
+                            mTask.execute(path,uploadUrl);
+                        }
+                    }).setImageSize(DisplayUtil.px2dip(context, imageWidthPx), DisplayUtil.px2dip(context, imageHeightPx)).setUploadResult(path);
+            map.put(path,ctImageWithCancel);
+            ll_imagesRoot.addView(map.get(path));
+        }
+    }
     public void uploadImages(String uploadUrl,String name)
     {
         this.uploadUrl = uploadUrl;
@@ -155,14 +184,25 @@ public class CtHorizontalScrollPictureLayout extends RelativeLayout
         {
             //最终结果的显示
             //            mTvProgress.setText(result);
-            Log.d("CCTV", "result " + result);
             if(result == null)
             {
                 if(map.get(path) != null)map.get(path).uploadFail();
             }else
             {
+                if(uploadDataParser != null)
+                {
+                    try
+                    {
+                        result = uploadDataParser.parseData(result);
+                        Log.d("CCTV", "result2 " + result);
+                    }catch(Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
                 if(map.get(path) != null)map.get(path).uploadSuccess(result);
             }
+            Log.d("CCTV", "result " + result);
         }
         @Override
         protected void onPreExecute()
@@ -346,5 +386,13 @@ public class CtHorizontalScrollPictureLayout extends RelativeLayout
         b = BitmapFactory.decodeStream(fis, null, o2);
         fis.close();
         return b;
+    }
+    public void setUploadDataParser(UploadDataParser uploadDataParser)
+    {
+        this.uploadDataParser = uploadDataParser;
+    }
+    public interface UploadDataParser
+    {
+        String parseData(String data) throws Exception;
     }
 }

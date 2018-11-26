@@ -132,6 +132,11 @@ public class CtImageWithCancel extends RelativeLayout
     {
         return uploadResult;
     }
+    public CtImageWithCancel setUploadResult(String uploadResult)
+    {
+        this.uploadResult = uploadResult;
+        return this;
+    }
     public CtImageWithCancel setUploadProgress(String msg)
     {
         tv_upload.setText("---- "+msg+" ----");
@@ -171,7 +176,8 @@ public class CtImageWithCancel extends RelativeLayout
         uploadResult = result;
         ll_uploadBg.setVisibility(View.GONE);
         btn_reUpload.setVisibility(View.GONE);
-        ll_uploadSuccess.setVisibility(View.VISIBLE);
+        ll_uploadSuccess.setVisibility(View.GONE);
+
     }
     public interface OnClickPictureListener
     {
