@@ -168,7 +168,8 @@ public class CtHorizontalScrollPictureLayout extends RelativeLayout
     }
     public void clear()
     {
-        map.clear();
+        if(map != null)map.clear();
+        if(ll_imagesRoot != null)ll_imagesRoot.removeAllViews();
     }
     public interface OnClickAddImageListener
     {
