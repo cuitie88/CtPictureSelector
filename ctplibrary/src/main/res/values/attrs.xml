@@ -6,6 +6,6 @@
         <attr name="add_button_src" format="reference" />
     </declare-styleable>
     <declare-styleable name="CtOnlyOnelPictureLayout">
-        <attr name="image_background" format="dimension" />
+        <attr name="image_background" format="reference" />
     </declare-styleable>
 </resources>
