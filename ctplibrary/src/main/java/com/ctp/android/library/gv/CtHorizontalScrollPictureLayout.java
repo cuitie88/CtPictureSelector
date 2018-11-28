@@ -51,7 +51,6 @@ public class CtHorizontalScrollPictureLayout extends RelativeLayout
      * 应用图片存放路径
      */
     public static final String APP_IMG_DIR = APP_ROOT_DIR+"img/";
-
     private LinearLayout ll_imagesRoot;
     private ImageView iv_addBtn;
     private int imageWidthPx = 300;
@@ -166,6 +165,10 @@ public class CtHorizontalScrollPictureLayout extends RelativeLayout
             images.add(entry.getValue());
         }
         return images;
+    }
+    public void clear()
+    {
+        map.clear();
     }
     public interface OnClickAddImageListener
     {
