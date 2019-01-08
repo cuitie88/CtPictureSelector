@@ -59,6 +59,7 @@ public class CtHorizontalScrollPictureLayout extends RelativeLayout
     private OnClickAddImageListener onClickAddImageListener;
     private String uploadUrl;
     private UploadDataParser uploadDataParser;
+    private int imageSize = 500;
     public CtHorizontalScrollPictureLayout(Context context, AttributeSet attrs)
     {
         super(context, attrs);
@@ -254,7 +255,7 @@ public class CtHorizontalScrollPictureLayout extends RelativeLayout
                 String fileName = file.getName();
                 String toPath = APP_IMG_DIR + fileName;
                 //处理文件并保存
-                compressBmpToFile(filePath,toPath);
+                compressBmpToFile(filePath,toPath,imageSize);
 
                 URL url = new URL(uploadUrl);
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
@@ -326,15 +327,16 @@ public class CtHorizontalScrollPictureLayout extends RelativeLayout
      * <p>功能描述：将图片压缩后存储
      * @param filePath 原图片路径
      * @param path 保存路径
+     * @param size     图片大小(KB)
      * @throws Exception
      */
-    private void compressBmpToFile(String filePath, String path) throws Exception
+    private void compressBmpToFile(String filePath, String path,int size) throws Exception
     {
         Bitmap bmp = decodeFile(filePath);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        int options = 80;//从百分之八十开始压缩
+        int options = 100;//从百分之八十开始压缩
         bmp.compress(Bitmap.CompressFormat.JPEG, options, baos);
-        while(baos.toByteArray().length / 1024 > 500)//压缩500KB以下
+        while(baos.toByteArray().length / 1024 > size)//压缩500KB以下
         {
             baos = new ByteArrayOutputStream();
             options -= 10;
@@ -381,7 +383,12 @@ public class CtHorizontalScrollPictureLayout extends RelativeLayout
         int scale = 1;
         if(o.outHeight > IMAGE_MAX_SIZE || o.outWidth > IMAGE_MAX_SIZE)
         {
-            scale = (int) Math.pow(2, (int) Math.round(Math.log(IMAGE_MAX_SIZE / (double) Math.max(o.outHeight, o.outWidth)) / Math.log(0.5)));
+            Log.d("CCTV","f.length() : "+f.length());
+            if((f.length() / 1024) > 500)
+            {
+                Log.d("CCTV","???????????");
+                scale = (int) Math.pow(2, (int) Math.round(Math.log(IMAGE_MAX_SIZE / (double) Math.max(o.outHeight, o.outWidth)) / Math.log(0.5)));
+            }
         }
         //Decode with inSampleSize
         BitmapFactory.Options o2 = new BitmapFactory.Options();
@@ -398,5 +405,9 @@ public class CtHorizontalScrollPictureLayout extends RelativeLayout
     public interface UploadDataParser
     {
         String parseData(String data) throws Exception;
+    }
+    public void setImageSize(int imageSize)
+    {
+        this.imageSize = imageSize;
     }
 }

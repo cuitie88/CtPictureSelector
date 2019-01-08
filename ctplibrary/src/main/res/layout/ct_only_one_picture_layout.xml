@@ -12,7 +12,7 @@
             android:layout_centerVertical="true"
             android:clickable="false"
             android:gravity="center"
-            android:padding="20dp">
+            android:padding="10dp">
             <ImageView
                 android:id="@+id/ct_oorl_delete_iv"
                 android:layout_width="wrap_content"
@@ -38,7 +38,7 @@
             android:orientation="horizontal"
             android:clickable="false"
             android:gravity="center"
-            android:padding="20dp">
+            android:padding="10dp">
             <ImageView
                 android:id="@+id/ct_oorl_magnifier_iv"
                 android:layout_width="wrap_content"
