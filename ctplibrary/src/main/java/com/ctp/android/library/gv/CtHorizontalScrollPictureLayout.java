@@ -89,7 +89,7 @@ public class CtHorizontalScrollPictureLayout extends RelativeLayout
     {
         this.onClickAddImageListener = onClickAddImageListener;
     }
-    public void addImages(Context context, ArrayList<String> paths)
+    public void addImages(Context context, ArrayList<String> paths, final String mame)
     {
         if(paths == null || paths.size() <= 0)return;
         for(final String path : paths)
@@ -110,14 +110,14 @@ public class CtHorizontalScrollPictureLayout extends RelativeLayout
                         public void onReUpload()
                         {
                             MyTask mTask = new MyTask(path);
-                            mTask.execute(path,uploadUrl);
+                            mTask.execute(path,uploadUrl,mame);
                         }
                     }).setImageSize(DisplayUtil.px2dip(context, imageWidthPx), DisplayUtil.px2dip(context, imageHeightPx));
             map.put(path,ctImageWithCancel);
             ll_imagesRoot.addView(map.get(path));
         }
     }
-    public void addImages(Context context, ArrayList<String> paths,String echoServer)
+    public void addImages(Context context, ArrayList<String> paths, String echoServer, final String mame)
     {
         if(paths == null || paths.size() <= 0)return;
         for(final String path : paths)
@@ -138,7 +138,7 @@ public class CtHorizontalScrollPictureLayout extends RelativeLayout
                         public void onReUpload()
                         {
                             MyTask mTask = new MyTask(path);
-                            mTask.execute(path,uploadUrl);
+                            mTask.execute(path,uploadUrl,mame);
                         }
                     }).setImageSize(DisplayUtil.px2dip(context, imageWidthPx), DisplayUtil.px2dip(context, imageHeightPx)).setUploadResult(path);
             map.put(path,ctImageWithCancel);
