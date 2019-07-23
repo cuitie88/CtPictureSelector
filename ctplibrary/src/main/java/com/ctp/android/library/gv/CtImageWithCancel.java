@@ -179,6 +179,17 @@ public class CtImageWithCancel extends RelativeLayout
         ll_uploadSuccess.setVisibility(View.GONE);
 
     }
+    public CtImageWithCancel showDelete(boolean isDelete)
+    {
+        if(isDelete)
+        {
+            ll_cancelBtn.setVisibility( View.VISIBLE );
+        }else
+        {
+            ll_cancelBtn.setVisibility( View.GONE );
+        }
+        return this;
+    }
     public interface OnClickPictureListener
     {
         void onDeletePicture(String url,View view);

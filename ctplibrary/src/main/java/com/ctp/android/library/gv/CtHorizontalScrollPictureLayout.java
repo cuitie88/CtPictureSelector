@@ -119,12 +119,17 @@ public class CtHorizontalScrollPictureLayout extends RelativeLayout
     }
     public void addImages(Context context, ArrayList<String> paths, String echoServer, final String mame)
     {
+        addImages( context ,paths ,echoServer ,mame,true);
+    }
+    public void addImages(Context context, ArrayList<String> paths, String echoServer, final String mame,boolean isDelete)
+    {
         if(paths == null || paths.size() <= 0)return;
         for(final String path : paths)
         {
             if(map.get(path) != null)return;
             CtImageWithCancel ctImageWithCancel = new CtImageWithCancel(context)
                     .setImage(context, echoServer+path)
+                    .showDelete( isDelete )
                     .setOnClickPictureListener(new CtImageWithCancel.OnClickPictureListener()
                     {
                         @Override
