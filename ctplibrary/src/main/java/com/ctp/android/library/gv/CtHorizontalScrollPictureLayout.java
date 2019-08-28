@@ -123,6 +123,17 @@ public class CtHorizontalScrollPictureLayout extends RelativeLayout
     }
     public void addImages(Context context, ArrayList<String> paths, String echoServer, final String mame,boolean isDelete)
     {
+        addImages(context, paths, echoServer, mame,isDelete,false);
+    }
+    public void addImages(Context context, ArrayList<String> paths, String echoServer, final String mame,boolean isDelete,boolean isCanAdd)
+    {
+        if(isCanAdd)
+        {
+            iv_addBtn.setVisibility(View.VISIBLE);
+        }else
+        {
+            iv_addBtn.setVisibility(View.GONE);
+        }
         if(paths == null || paths.size() <= 0)return;
         for(final String path : paths)
         {
