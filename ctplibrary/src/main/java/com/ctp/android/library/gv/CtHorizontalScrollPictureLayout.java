@@ -300,6 +300,8 @@ public class CtHorizontalScrollPictureLayout extends RelativeLayout
         {
             //最终结果的显示
             //            mTvProgress.setText(result);
+
+            Log.d("CCTV", "result11111111111111 " + result);
             if(result == null)
             {
                 if(map.get(path) != null)map.get(path).uploadFail();
@@ -424,12 +426,14 @@ public class CtHorizontalScrollPictureLayout extends RelativeLayout
                 BufferedReader reader = new BufferedReader(new InputStreamReader(
                         conn.getInputStream()));
                 String line = null;
+                StringBuffer stringBuffer = new StringBuffer();
                 while ((line = reader.readLine()) != null) {
 
                     Log.d("CCTV","line : "+line);
 
-                    ret = line;
+                    stringBuffer.append(line);
                 }
+                ret = stringBuffer.toString();
             } catch (Exception e) {
                 e.printStackTrace();
             }
