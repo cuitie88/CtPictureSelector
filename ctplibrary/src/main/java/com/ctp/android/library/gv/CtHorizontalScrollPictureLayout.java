@@ -351,7 +351,7 @@ public class CtHorizontalScrollPictureLayout extends RelativeLayout
             try {
                 //这里params[0]和params[1]是execute传入的两个参数
                 String filePath = params[0];
-                String uploadUrl = params[1];
+                String url = params[1];
                 String name = params[2];
                 String paramKey = params[3];
                 String paramVlaue = params[4];
@@ -370,7 +370,6 @@ public class CtHorizontalScrollPictureLayout extends RelativeLayout
 
 
                 String boundary = UUID.randomUUID().toString(); //边界标识 随机生成
-                String url = "http://192.168.1.233:9999/api-szy-file/file/upload";
                 //            String url = "http://zuulga.hbjzz.com:7200/api-population-file/";
                 URL u = new URL(url);
                 HttpURLConnection conn = (HttpURLConnection) u.openConnection();
