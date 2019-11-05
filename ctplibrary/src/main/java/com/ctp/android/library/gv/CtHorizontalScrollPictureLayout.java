@@ -22,6 +22,7 @@ import com.ctp.android.library.ps.tool.util.DisplayUtil;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,12 +30,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 /**
@@ -89,7 +92,7 @@ public class CtHorizontalScrollPictureLayout extends RelativeLayout
     {
         this.onClickAddImageListener = onClickAddImageListener;
     }
-    public void addImages(Context context, ArrayList<String> paths, final String mame)
+    public void addImages(Context context, ArrayList<String> paths, final String mame,final String paramKey,final String paramVlaue)
     {
         if(paths == null || paths.size() <= 0)return;
         for(final String path : paths)
@@ -109,23 +112,23 @@ public class CtHorizontalScrollPictureLayout extends RelativeLayout
                         @Override
                         public void onReUpload()
                         {
-                            MyTask mTask = new MyTask(path);
-                            mTask.execute(path,uploadUrl,mame);
+                            MyTaskTow mTask = new MyTaskTow(path);
+                            mTask.execute(path,uploadUrl,mame,paramKey,paramVlaue);
                         }
                     }).setImageSize(DisplayUtil.px2dip(context, imageWidthPx), DisplayUtil.px2dip(context, imageHeightPx));
             map.put(path,ctImageWithCancel);
             ll_imagesRoot.addView(map.get(path));
         }
     }
-    public void addImages(Context context, ArrayList<String> paths, String echoServer, final String mame)
+    public void addImages(Context context, ArrayList<String> paths, String echoServer, final String mame,final String paramKey,final String paramVlaue)
     {
-        addImages( context ,paths ,echoServer ,mame,true);
+        addImages( context ,paths ,echoServer ,mame,paramKey,paramVlaue,true);
     }
-    public void addImages(Context context, ArrayList<String> paths, String echoServer, final String mame,boolean isDelete)
+    public void addImages(Context context, ArrayList<String> paths, String echoServer, final String mame,final String paramKey,final String paramVlaue,boolean isDelete)
     {
-        addImages(context, paths, echoServer, mame,isDelete,false);
+        addImages(context, paths, echoServer, mame,paramKey,paramVlaue,isDelete,false);
     }
-    public void addImages(Context context, ArrayList<String> paths, String echoServer, final String mame,boolean isDelete,boolean isCanAdd)
+    public void addImages(Context context, ArrayList<String> paths, String echoServer, final String mame,final String paramKey,final String paramVlaue,boolean isDelete,boolean isCanAdd)
     {
         if(isCanAdd)
         {
@@ -153,15 +156,15 @@ public class CtHorizontalScrollPictureLayout extends RelativeLayout
                         @Override
                         public void onReUpload()
                         {
-                            MyTask mTask = new MyTask(path);
-                            mTask.execute(path,uploadUrl,mame);
+                            MyTaskTow mTask = new MyTaskTow(path);
+                            mTask.execute(path,uploadUrl,mame,paramKey,paramVlaue);
                         }
                     }).setImageSize(DisplayUtil.px2dip(context, imageWidthPx), DisplayUtil.px2dip(context, imageHeightPx)).setUploadResult(path);
             map.put(path,ctImageWithCancel);
             ll_imagesRoot.addView(map.get(path));
         }
     }
-    public void uploadImages(String uploadUrl,String name)
+    public void uploadImages(String uploadUrl,String name,String paramKey,String paramVlaue)
     {
         this.uploadUrl = uploadUrl;
         for(Map.Entry<String, CtImageWithCancel> entry : map.entrySet())
@@ -170,8 +173,8 @@ public class CtHorizontalScrollPictureLayout extends RelativeLayout
             CtImageWithCancel ctImageWithCancel = entry.getValue();
             if(ctImageWithCancel.getUploadResult() != null)continue;
             ctImageWithCancel.initUpload();
-            MyTask mTask = new MyTask(entry.getKey());
-            mTask.execute(entry.getKey(),uploadUrl,name);
+            MyTaskTow mTask = new MyTaskTow(entry.getKey());
+            mTask.execute(entry.getKey(),uploadUrl,name,paramKey,paramVlaue);
         }
     }
     public ArrayList<CtImageWithCancel> getImages()
@@ -191,152 +194,6 @@ public class CtHorizontalScrollPictureLayout extends RelativeLayout
     public interface OnClickAddImageListener
     {
         void onAdd();
-    }
-    private class MyTask extends AsyncTask<String, Integer, String>
-    {
-        private boolean isCancel = false;
-        final private String path;
-        private MyTask(String path)
-        {
-            this.path = path;
-        }
-        @Override
-        protected void onPostExecute(String result)
-        {
-            //最终结果的显示
-            //            mTvProgress.setText(result);
-            if(result == null)
-            {
-                if(map.get(path) != null)map.get(path).uploadFail();
-            }else
-            {
-                if(uploadDataParser != null)
-                {
-                    try
-                    {
-                        result = uploadDataParser.parseData(result);
-                        Log.d("CCTV", "result2 " + result);
-                    }catch(Exception e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
-                if(map.get(path) != null)map.get(path).uploadSuccess(result);
-            }
-            Log.d("CCTV", "result " + result);
-        }
-        @Override
-        protected void onPreExecute()
-        {
-            //开始前的准备工作
-            //            mTvProgress.setText("loading...");
-//            Log.d("CCTV", "loading...");
-            if(map.get(path) != null)map.get(path).startUpload();
-        }
-        @Override
-        protected void onProgressUpdate(Integer... values)
-        {
-            //显示进度
-            //            mPgBar.setProgress(values[0]);
-            //            mTvProgress.setText("loading..." + values[0] + "%");
-//            Log.d("CCTV", "values[0] " + values[0]);
-            Log.d("CCTV", path + " --> loading..." + values[0] + "%");
-            if(map.get(path) == null)
-            {
-                isCancel = true;
-                this.cancel(true);
-                return;
-            }
-            map.get(path).updateUpload(values[0] + "%");
-        }
-        @Override
-        protected String doInBackground(String... params)
-        {
-            String ret = null;
-            //这里params[0]和params[1]是execute传入的两个参数
-            String filePath = params[0];
-            String uploadUrl = params[1];
-            String name = params[2];
-            //下面即手机端上传文件的代码
-            String end = "\r\n";
-            String twoHyphens = "--";
-            String boundary = "******";
-            try
-            {
-                //查看目录是否存在，不存在创建
-                File f_dir = new File(APP_IMG_DIR);
-                if(!f_dir.exists()) f_dir.mkdirs();
-                //创建压缩文件存放路径
-                File file = new File(filePath);
-                String fileName = file.getName();
-                String toPath = APP_IMG_DIR + fileName;
-                //处理文件并保存
-                compressBmpToFile(filePath,toPath,imageSize);
-
-                URL url = new URL(uploadUrl);
-                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                httpURLConnection.setDoInput(true);
-                httpURLConnection.setDoOutput(true);
-                httpURLConnection.setUseCaches(false);
-                httpURLConnection.setRequestMethod("POST");
-                httpURLConnection.setConnectTimeout(6 * 1000);
-                httpURLConnection.setRequestProperty("Connection", "Keep-Alive");
-                httpURLConnection.setRequestProperty("Charset", "UTF-8");
-                httpURLConnection.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
-                DataOutputStream dos = new DataOutputStream(httpURLConnection.getOutputStream());
-                dos.writeBytes(twoHyphens + boundary + end);
-                dos.writeBytes("Content-Disposition: form-data; name=\""+name+"\"; filename=\"" + toPath.substring(toPath.lastIndexOf("/") + 1) + "\"" + end);
-                dos.writeBytes(end);
-                //获取文件总大小
-                FileInputStream fis = new FileInputStream(toPath);
-                long total = fis.available();
-                byte[] buffer = new byte[819200]; // 8k
-                int count = 0;
-                int length = 0;
-                while((count = fis.read(buffer)) != -1)
-                {
-                    if(isCancel)
-                    {
-                        fis.close();
-                        dos.close();
-                        return ret;
-                    }
-                    dos.write(buffer, 0, count);
-                    //获取进度，调用publishProgress()
-                    length += count;
-                    publishProgress((int) ((length / (float) total) * 99));
-                    //这里是测试时为了演示进度,休眠500毫秒，正常应去掉
-                    Thread.sleep(500);
-                }
-                fis.close();
-                dos.writeBytes(end);
-                dos.writeBytes(twoHyphens + boundary + twoHyphens + end);
-                dos.flush();
-                InputStream is = httpURLConnection.getInputStream();
-                InputStreamReader isr = new InputStreamReader(is, "utf-8");
-                BufferedReader br = new BufferedReader(isr);
-                StringBuffer sb = new StringBuffer();
-                String line = null;
-                while ((line = br.readLine()) != null) {
-                    if(isCancel)
-                    {
-                        dos.close();
-                        is.close();
-                        return ret;
-                    }
-                    sb.append(line);
-                }
-                dos.close();
-                is.close();
-                ret = sb.toString();
-                File f = new File(toPath);
-                if(f.exists())f.delete();
-            }catch(Exception e)
-            {
-                e.printStackTrace();
-            }
-            return ret;
-        }
     }
     /**
      * <p>创建时间：2018/10/23 0023 09:13
@@ -425,5 +282,159 @@ public class CtHorizontalScrollPictureLayout extends RelativeLayout
     public void setImageSize(int imageSize)
     {
         this.imageSize = imageSize;
+    }
+
+
+
+
+    private class MyTaskTow extends AsyncTask<String, Integer, String>
+    {
+        private boolean isCancel = false;
+        final private String path;
+        private MyTaskTow(String path)
+        {
+            this.path = path;
+        }
+        @Override
+        protected void onPostExecute(String result)
+        {
+            //最终结果的显示
+            //            mTvProgress.setText(result);
+            if(result == null)
+            {
+                if(map.get(path) != null)map.get(path).uploadFail();
+            }else
+            {
+                if(uploadDataParser != null)
+                {
+                    try
+                    {
+                        result = uploadDataParser.parseData(result);
+                        Log.d("CCTV", "result2 " + result);
+                    }catch(Exception e)
+                    {
+                        e.printStackTrace();
+                    }
+                }
+                if(map.get(path) != null)map.get(path).uploadSuccess(result);
+            }
+            Log.d("CCTV", "result " + result);
+        }
+        @Override
+        protected void onPreExecute()
+        {
+            //开始前的准备工作
+            //            mTvProgress.setText("loading...");
+            //            Log.d("CCTV", "loading...");
+            if(map.get(path) != null)map.get(path).startUpload();
+        }
+        @Override
+        protected void onProgressUpdate(Integer... values)
+        {
+            //显示进度
+            //            mPgBar.setProgress(values[0]);
+            //            mTvProgress.setText("loading..." + values[0] + "%");
+            //            Log.d("CCTV", "values[0] " + values[0]);
+            Log.d("CCTV", path + " --> loading..." + values[0] + "%");
+            if(map.get(path) == null)
+            {
+                isCancel = true;
+                this.cancel(true);
+                return;
+            }
+            map.get(path).updateUpload(values[0] + "%");
+        }
+        @Override
+        protected String doInBackground(String... params)
+        {
+            String ret = null;
+            try {
+                //这里params[0]和params[1]是execute传入的两个参数
+                String filePath = params[0];
+                String uploadUrl = params[1];
+                String name = params[2];
+                String paramKey = params[3];
+                String paramVlaue = params[4];
+                //查看目录是否存在，不存在创建
+                File f_dir = new File(APP_IMG_DIR);
+                if(!f_dir.exists()) f_dir.mkdirs();
+                //创建压缩文件存放路径
+                File file2 = new File(filePath);
+                String fileName = file2.getName();
+                String toPath = APP_IMG_DIR + fileName;
+                //处理文件并保存
+                compressBmpToFile(filePath,toPath,imageSize);
+
+                ArrayList<String> list = new ArrayList<>();
+                list.add(toPath);
+
+
+                String boundary = UUID.randomUUID().toString(); //边界标识 随机生成
+                String url = "http://192.168.1.233:9999/api-szy-file/file/upload";
+                //            String url = "http://zuulga.hbjzz.com:7200/api-population-file/";
+                URL u = new URL(url);
+                HttpURLConnection conn = (HttpURLConnection) u.openConnection();
+                conn.setDoOutput(true);
+                conn.setDoInput(true);
+                conn.setUseCaches(false);
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("connection", "Keep-Alive");
+                conn.setRequestProperty("Charsert", "UTF-8");
+                conn.setRequestProperty("Content-Type","multipart/form-data;boundary=" + boundary);
+                // 指定流的大小，当内容达到这个值的时候就把流输出
+                conn.setChunkedStreamingMode(10240);
+                OutputStream out = new DataOutputStream(conn.getOutputStream());
+                byte[] end_data = ("\r\n--" + boundary + "--\r\n").getBytes();// 定义最后数据分隔线
+                StringBuilder sb = new StringBuilder();
+                //添加form属性
+                sb.append("--");
+                sb.append(boundary);
+                sb.append("\r\n");
+                sb.append("Content-Disposition: form-data; name=\""+paramKey+"\"");
+                sb.append("\r\n\r\n");
+                sb.append(paramVlaue);
+                out.write(sb.toString().getBytes("utf-8"));
+                out.write("\r\n".getBytes("utf-8"));
+
+                int leng = list.size();
+                for (int i = 0; i < leng; i++) {
+                    String fname = list.get(i);
+                    File file = new File(fname);
+                    sb = new StringBuilder();
+                    sb.append("--");
+                    sb.append(boundary);
+                    sb.append("\r\n");
+                    sb.append("Content-Disposition: form-data;name=\""+name+"\";filename=\"" + file.getName() + "\"\r\n");
+                    sb.append("Content-Type:application/octet-stream\r\n\r\n");
+                    byte[] data = sb.toString().getBytes();
+                    out.write(data);
+                    DataInputStream in = new DataInputStream(new FileInputStream(
+                            file));
+                    int bytes = 0;
+                    byte[] bufferOut = new byte[1024];
+                    while ((bytes = in.read(bufferOut)) != -1) {
+                        out.write(bufferOut, 0, bytes);
+                    }
+                    out.write("\r\n".getBytes()); // 多个文件时，二个文件之间加入这个
+                    in.close();
+                }
+                out.write(end_data);
+                out.flush();
+                out.close();
+                // 定义BufferedReader输入流来读取URL的响应
+                BufferedReader reader = new BufferedReader(new InputStreamReader(
+                        conn.getInputStream()));
+                String line = null;
+                while ((line = reader.readLine()) != null) {
+
+                    Log.d("CCTV","line : "+line);
+
+                    ret = line;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return ret;
+        }
     }
 }
