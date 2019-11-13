@@ -140,7 +140,7 @@ public class CtHorizontalScrollPictureLayout extends RelativeLayout
         if(paths == null || paths.size() <= 0)return;
         for(final String path : paths)
         {
-            if(map.get(path) != null)return;
+            if(map.get(path) != null)continue;
             CtImageWithCancel ctImageWithCancel = new CtImageWithCancel(context)
                     .setImage(context, echoServer+path)
                     .showDelete( isDelete )
