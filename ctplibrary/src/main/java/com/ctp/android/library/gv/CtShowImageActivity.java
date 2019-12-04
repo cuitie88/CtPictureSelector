@@ -20,6 +20,9 @@ public class CtShowImageActivity extends AppCompatActivity
 {
     private LinearLayout ll_backBtn;
     private ZoomImageView zoomImageView;
+
+    private String tokenName;
+    private String token;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -40,6 +43,8 @@ public class CtShowImageActivity extends AppCompatActivity
             if(getIntent().getExtras() != null)
             {
                 final String s_url = getIntent().getExtras().getString("url", null);
+                tokenName = getIntent().getExtras().getString("tokenName", null);
+                token = getIntent().getExtras().getString("token", null);
                 if(s_url != null)
                 {
                     if(s_url.startsWith("http"))
@@ -109,13 +114,14 @@ public class CtShowImageActivity extends AppCompatActivity
      * @param urlpath 图片地址
      * @return
      */
-    public static Bitmap getBitMBitmap(String urlpath)
+    public Bitmap getBitMBitmap(String urlpath)
     {
         Bitmap map = null;
         try
         {
             URL url = new URL(urlpath);
             URLConnection conn = url.openConnection();
+            if(token != null && tokenName != null)conn.setRequestProperty(tokenName, token);
             conn.connect();
             InputStream in;
             in = conn.getInputStream();
